@@ -101,3 +101,12 @@ class Memory:
             return total / 0x4000
         else:
             return rom_size.banks
+
+    def read_byte(self, address):
+        if address < 0x4000:
+            return self.rom[0][address]
+        elif address < 0x8000:
+            return self.rom[self.rom_bank][address]
+
+    def write_byte(self, address, value):
+        pass
