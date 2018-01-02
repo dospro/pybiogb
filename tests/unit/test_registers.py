@@ -51,3 +51,51 @@ class TestRegisters(unittest.TestCase):
         registers.z80_register_af = 0x1080
         self.assertEqual(registers.z80_register_a, 0x10)
         self.assertEqual(registers.z80_register_f, 0x80)
+
+    def test_z_flag(self):
+        registers = Registers()
+        registers.z80_register_f = 0x80
+        self.assertEqual(registers.z80_flag_z, 1)
+        registers.z80_register_f = 0
+        self.assertEqual(registers.z80_flag_z, 0)
+
+    def test_f_from_z_flag(self):
+        registers = Registers()
+        registers.z80_flag_z = 1
+        self.assertEqual(registers.z80_register_f, 0x80)
+
+    def test_n_flag(self):
+        registers = Registers()
+        registers.z80_register_f = 0x40
+        self.assertEqual(registers.z80_flag_n, 1)
+        registers.z80_register_f = 0
+        self.assertEqual(registers.z80_flag_n, 0)
+
+    def test_f_from_n_flag(self):
+        registers = Registers()
+        registers.z80_flag_n = 1
+        self.assertEqual(registers.z80_register_f, 0x40)
+
+    def test_h_flag(self):
+        registers = Registers()
+        registers.z80_register_f = 0x20
+        self.assertEqual(registers.z80_flag_h, 1)
+        registers.z80_register_f = 0
+        self.assertEqual(registers.z80_flag_h, 0)
+
+    def test_f_from_h_flag(self):
+        registers = Registers()
+        registers.z80_flag_h = 1
+        self.assertEqual(registers.z80_register_f, 0x20)
+
+    def test_c_flag(self):
+        registers = Registers()
+        registers.z80_register_f = 0x10
+        self.assertEqual(registers.z80_flag_c, 1)
+        registers.z80_register_f = 0
+        self.assertEqual(registers.z80_flag_c, 0)
+
+    def test_f_from_c_flag(self):
+        registers = Registers()
+        registers.z80_flag_c = 1
+        self.assertEqual(registers.z80_register_f, 0x10)

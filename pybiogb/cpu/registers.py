@@ -1,16 +1,16 @@
 class Registers:
     def __init__(self):
-        self.z80_register_a = None
-        self.z80_register_b = None
-        self.z80_register_c = None
-        self.z80_register_d = None
-        self.z80_register_e = None
-        self.z80_register_f = None
-        self.z80_register_h = None
-        self.z80_register_l = None
+        self.z80_register_a = 0
+        self.z80_register_b = 0
+        self.z80_register_c = 0
+        self.z80_register_d = 0
+        self.z80_register_e = 0
+        self.z80_register_f = 0
+        self.z80_register_h = 0
+        self.z80_register_l = 0
 
-        self.z80_register_pc = None
-        self.z80_register_sp = None
+        self.z80_register_pc = 0
+        self.z80_register_sp = 0
 
     @property
     def z80_register_bc(self):
@@ -47,3 +47,39 @@ class Registers:
     def z80_register_af(self, value):
         self.z80_register_a = (value >> 8) & 0xFF
         self.z80_register_f = value & 0xFF
+
+    @property
+    def z80_flag_z(self):
+        return 1 if self.z80_register_f & 0x80 else 0
+
+    @z80_flag_z.setter
+    def z80_flag_z(self, value):
+        if value:
+            self.z80_register_f |= 0x80
+
+    @property
+    def z80_flag_n(self):
+        return 1 if self.z80_register_f & 0x40 else 0
+
+    @z80_flag_n.setter
+    def z80_flag_n(self, value):
+        if value:
+            self.z80_register_f |= 0x40
+
+    @property
+    def z80_flag_h(self):
+        return 1 if self.z80_register_f & 0x20 else 0
+
+    @z80_flag_h.setter
+    def z80_flag_h(self, value):
+        if value:
+            self.z80_register_f |= 0x20
+
+    @property
+    def z80_flag_c(self):
+        return 1 if self.z80_register_f & 0x10 else 0
+
+    @z80_flag_c.setter
+    def z80_flag_c(self, value):
+        if value:
+            self.z80_register_f = self.z80_register_f | 0x10
