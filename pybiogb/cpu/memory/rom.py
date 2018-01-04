@@ -3,6 +3,8 @@ import abc
 import io
 from collections import namedtuple
 
+from pybiogb.exceptions import MemoryError
+
 
 class Rom(metaclass=abc.ABCMeta):
     def __init__(self):
@@ -11,6 +13,7 @@ class Rom(metaclass=abc.ABCMeta):
         self.mbc_type = 0
         self.rom_banks = 0
         self.ram_banks = 0
+        self.current_rom_bank = 0
 
         self.content = []
 
@@ -20,7 +23,7 @@ class Rom(metaclass=abc.ABCMeta):
         with open(file_name, 'rb') as file:
             file.seek(0x147)
             mbc_byte = int.from_bytes(file.read(1), 'little')
-        instance = mbc_types[mbc_byte][1](mbc_byte)
+        instance = mbc_types[mbc_byte].type_class(mbc_byte)
         instance.load(file_name)
         return instance
 
@@ -64,24 +67,49 @@ class Rom(metaclass=abc.ABCMeta):
         pass
 
 
-class MBC1(Rom):
-    def __init__(self, banks):
+class RomOnly(Rom):
+    def __init__(self):
         super().__init__()
 
     def read(self, address):
-        pass
+        if address < 0x4000:
+            return self.content[0][address]
+        else:
+            raise MemoryError('Trying to read beyond rom address.')
+
+    def write(self, address, value):
+        raise MemoryError('There should not be writes for Rom Only roms.')
+
+
+class MBC1(Rom):
+    def __init__(self):
+        super().__init__()
+
+    def read(self, address):
+        if address < 0x4000:
+            return self.content[0][address]
+        elif address < 0x8000:
+            return self.content[self.current_rom_bank][address]
+        else:
+            raise MemoryError
 
     def write(self, address, value):
         pass
 
 
+class MBC2(Rom):
+    pass
+
+
+ChipType = namedtuple('ChipType', 'name type_class')
+
 mbc_types = {
-    0: 'Rom Only',
-    1: ('Rom + MBC1', MBC1),
-    2: 'Rom + MBC1 + Ram',
-    3: 'Rom + MBC1 + Ram + Battery',
-    5: 'Rom + MBC2',
-    6: 'Rom + MBC2 + Battery',
+    0: ChipType('Rom Only', RomOnly),
+    1: ChipType('Rom + MBC1', MBC1),
+    2: ChipType('Rom + MBC1 + Ram', MBC1),
+    3: ChipType('Rom + MBC1 + Ram + Battery', MBC1),
+    5: ChipType('Rom + MBC2', MBC2),
+    6: ChipType('Rom + MBC2 + Battery', MBC2),
     8: 'Rom + Ram',
     9: 'Rom + Ram + Battery',
     0xB: 'Rom + MMMO1(Not working)',

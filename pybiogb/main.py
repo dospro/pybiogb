@@ -1,5 +1,5 @@
-from pybiogb.cpu.memory.memory import Memory
+from pybiogb.cpu.cpu import Cpu
 
-gb = Memory()
-header = gb.load_gb_file('blue.gb')
-print(header)
+gb = Cpu()
+
+print('pybiogb is a pythonic GameBoy emulator.')
