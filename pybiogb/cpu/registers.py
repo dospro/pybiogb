@@ -56,6 +56,8 @@ class Registers:
     def z_flag(self, value):
         if value:
             self.f_register |= 0x80
+        else:
+            self.f_register &= 0x7F
 
     @property
     def n_flag(self):
@@ -65,6 +67,8 @@ class Registers:
     def n_flag(self, value):
         if value:
             self.f_register |= 0x40
+        else:
+            self.f_register &= 0xBF
 
     @property
     def h_flag(self):
@@ -74,6 +78,8 @@ class Registers:
     def h_flag(self, value):
         if value:
             self.f_register |= 0x20
+        else:
+            self.f_register &= 0xDF
 
     @property
     def c_flag(self):
@@ -82,4 +88,6 @@ class Registers:
     @c_flag.setter
     def c_flag(self, value):
         if value:
-            self.f_register = self.f_register | 0x10
+            self.f_register |= 0x10
+        else:
+            self.f_register &= 0xEF

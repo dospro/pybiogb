@@ -99,3 +99,27 @@ class TestRegisters(unittest.TestCase):
         registers = Registers()
         registers.c_flag = 1
         self.assertEqual(registers.f_register, 0x10)
+
+    def test_reset_z_flag(self):
+        registers = Registers()
+        registers.f_register = 0xFF
+        registers.z_flag = 0
+        self.assertEqual(registers.f_register & 0x80, 0)
+
+    def test_reset_n_flag(self):
+        registers = Registers()
+        registers.f_register = 0xFF
+        registers.n_flag = 0
+        self.assertEqual(registers.f_register & 0x40, 0)
+
+    def test_reset_h_flag(self):
+        registers = Registers()
+        registers.f_register = 0xFF
+        registers.h_flag = 0
+        self.assertEqual(registers.f_register & 0x20, 0)
+
+    def test_reset_c_flag(self):
+        registers = Registers()
+        registers.f_register = 0xFF
+        registers.c_flag = 0
+        self.assertEqual(registers.f_register & 0x10, 0)
