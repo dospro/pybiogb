@@ -82,7 +82,7 @@ class RomOnly(Rom):
 
 
 class MBC1(Rom):
-    def __init__(self):
+    def __init__(self, mbc_byte):
         super().__init__()
 
     def read(self, address):

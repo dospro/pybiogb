@@ -1,85 +1,85 @@
 class Registers:
     def __init__(self):
-        self.z80_register_a = 0
-        self.z80_register_b = 0
-        self.z80_register_c = 0
-        self.z80_register_d = 0
-        self.z80_register_e = 0
-        self.z80_register_f = 0
-        self.z80_register_h = 0
-        self.z80_register_l = 0
+        self.a_register = 0
+        self.b_register = 0
+        self.c_register = 0
+        self.d_register = 0
+        self.e_register = 0
+        self.f_register = 0
+        self.h_register = 0
+        self.l_register = 0
 
-        self.z80_register_pc = 0
-        self.z80_register_sp = 0
-
-    @property
-    def z80_register_bc(self):
-        return (self.z80_register_b << 8) | self.z80_register_c
-
-    @z80_register_bc.setter
-    def z80_register_bc(self, value):
-        self.z80_register_b = (value >> 8) & 0xFF
-        self.z80_register_c = value & 0xFF
+        self.pc_register = 0
+        self.sp_register = 0
 
     @property
-    def z80_register_de(self):
-        return (self.z80_register_d << 8) | self.z80_register_e
+    def bc_register(self):
+        return (self.b_register << 8) | self.c_register
 
-    @z80_register_de.setter
-    def z80_register_de(self, value):
-        self.z80_register_d = (value >> 8) & 0xFF
-        self.z80_register_e = value & 0xFF
-
-    @property
-    def z80_register_hl(self):
-        return (self.z80_register_h << 8) | self.z80_register_l
-
-    @z80_register_hl.setter
-    def z80_register_hl(self, value):
-        self.z80_register_h = (value >> 8) & 0xFF
-        self.z80_register_l = value & 0xFF
+    @bc_register.setter
+    def bc_register(self, value):
+        self.b_register = (value >> 8) & 0xFF
+        self.c_register = value & 0xFF
 
     @property
-    def z80_register_af(self):
-        return (self.z80_register_a << 8) | self.z80_register_f
+    def de_register(self):
+        return (self.d_register << 8) | self.e_register
 
-    @z80_register_af.setter
-    def z80_register_af(self, value):
-        self.z80_register_a = (value >> 8) & 0xFF
-        self.z80_register_f = value & 0xFF
+    @de_register.setter
+    def de_register(self, value):
+        self.d_register = (value >> 8) & 0xFF
+        self.e_register = value & 0xFF
 
     @property
-    def z80_flag_z(self):
-        return 1 if self.z80_register_f & 0x80 else 0
+    def hl_register(self):
+        return (self.h_register << 8) | self.l_register
 
-    @z80_flag_z.setter
-    def z80_flag_z(self, value):
+    @hl_register.setter
+    def hl_register(self, value):
+        self.h_register = (value >> 8) & 0xFF
+        self.l_register = value & 0xFF
+
+    @property
+    def af_register(self):
+        return (self.a_register << 8) | self.f_register
+
+    @af_register.setter
+    def af_register(self, value):
+        self.a_register = (value >> 8) & 0xFF
+        self.f_register = value & 0xFF
+
+    @property
+    def z_flag(self):
+        return 1 if self.f_register & 0x80 else 0
+
+    @z_flag.setter
+    def z_flag(self, value):
         if value:
-            self.z80_register_f |= 0x80
+            self.f_register |= 0x80
 
     @property
-    def z80_flag_n(self):
-        return 1 if self.z80_register_f & 0x40 else 0
+    def n_flag(self):
+        return 1 if self.f_register & 0x40 else 0
 
-    @z80_flag_n.setter
-    def z80_flag_n(self, value):
+    @n_flag.setter
+    def n_flag(self, value):
         if value:
-            self.z80_register_f |= 0x40
+            self.f_register |= 0x40
 
     @property
-    def z80_flag_h(self):
-        return 1 if self.z80_register_f & 0x20 else 0
+    def h_flag(self):
+        return 1 if self.f_register & 0x20 else 0
 
-    @z80_flag_h.setter
-    def z80_flag_h(self, value):
+    @h_flag.setter
+    def h_flag(self, value):
         if value:
-            self.z80_register_f |= 0x20
+            self.f_register |= 0x20
 
     @property
-    def z80_flag_c(self):
-        return 1 if self.z80_register_f & 0x10 else 0
+    def c_flag(self):
+        return 1 if self.f_register & 0x10 else 0
 
-    @z80_flag_c.setter
-    def z80_flag_c(self, value):
+    @c_flag.setter
+    def c_flag(self, value):
         if value:
-            self.z80_register_f = self.z80_register_f | 0x10
+            self.f_register = self.f_register | 0x10
