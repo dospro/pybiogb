@@ -94,7 +94,7 @@ class Cpu:
 
     def call(self, condition, address):
         if condition:
-            self.push(self.registers.pc_register)
+            self.z80_push(self.registers.pc_register)
             self.registers.pc_register = address
 
     def cp(self, value):
@@ -155,6 +155,42 @@ class Cpu:
             signed_value = value - 256
         if condition:
             self.registers.pc_register += signed_value
+
+    def ld_hl(self, signed_value):
+        unsigned_value = signed_value
+        if signed_value < 0:
+            unsigned_value += 256
+        self.registers.c_flag = ((self.registers.sp_register & 0xFF) + unsigned_value) > 0xFF
+        self.registers.h_flag = ((self.registers.sp_register & 0xF) + (unsigned_value & 0xF) > 0xF)
+        self.registers.z_flag = False
+        self.registers.n_flag = False
+        self.registers.hl_register = self.registers.sp_register + signed_value
+
+    def ld_nn_sp(self, value):
+        self.memory.write_byte(value, self.registers.sp_register & 0xFF)
+        self.memory.write_byte(value + 1, self.registers.sp_register >> 8)
+
+    def z80_or(self, value):
+        self.registers.a_register |= value
+        self.registers.z_flag = self.registers.a_register == 0
+        self.registers.n_flag = False
+        self.registers.h_flag = False
+        self.registers.c_flag = False
+
+    def z80_pop(self, register_name):
+        high_byte = self.memory.read_byte(self.registers.sp_register)
+        self.registers.sp_register += 1
+        low_byte = self.memory.read_byte(self.registers.sp_register)
+        self.registers.sp_register += 1
+        result = (high_byte << 8) | low_byte
+        setattr(self.registers, register_name, result)
+
+    def z80_push(self, register_name):
+        register_value = getattr(self.registers, register_name)
+        self.registers.sp_register -= 1
+        self.memory.write_byte(self.registers.sp_register, register_value >> 8)
+        self.registers.sp_register -= 1
+        self.memory.write_byte(self.registers.sp_register, register_value & 0xFF)
 
     def ld(self, src_name, dst_name):
         setattr(self.registers, dst_name, getattr(self.registers, src_name))
