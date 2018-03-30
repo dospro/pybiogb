@@ -89,6 +89,26 @@ class Cpu:
             0xFA: self.ld_a_nn,
             0x3E: self.ld_n('a_register'),
 
+            0x47: self.ld('register_b', 'register_b'),
+            0x4F: self.ld('register_c', 'register_b'),
+            0x57: self.ld('register_d', 'register_b'),
+            0x5F: self.ld('register_e', 'register_b'),
+            0x67: self.ld('register_h', 'register_b'),
+            0x6F: self.ld('register_l', 'register_b'),
+
+            0x02: self.ld_rr_a('register_bc'),
+            0x12: self.ld_rr_a('register_de'),
+            0x77: self.ld_rr_a('register_hl'),
+            0xEA: self.ld_nn_a,
+
+            0xF2: self.ld_a_ff00_plus_c,
+            0xE2: self.ld_ff00_plus_c_a,
+
+            0x3A: self.ld_a_hl_dec,
+            0x32: self.ld_hl_a_dec,
+            0x2A: self.ld_a_hl_inc,
+            0x22: self.ld_hl_a_inc,
+
             0x87: partial(self.add, self.registers.a_register),
             0x80: partial(self.add, self.registers.b_register),
             0x81: partial(self.add, self.registers.c_register),
@@ -115,7 +135,8 @@ class Cpu:
         }
 
     def execute_opcode(self):
-        pass
+        opcode = self.read_next_byte()
+        self.opcodes[opcode]()
 
     def read_next_byte(self):
         result = self.memory.read_byte(self.registers.pc_register)
@@ -316,9 +337,45 @@ class Cpu:
 
     def ld_a_nn(self):
         low_byte = self.read_next_byte()
-        hi_value = self.read_next_byte()
-        address = ((hi_value << 8) | low_byte) & 0xFFFF
+        high_byte = self.read_next_byte()
+        address = ((high_byte << 8) | low_byte) & 0xFFFF
         self.registers.a_register = self.memory.read_byte(address)
+
+    def ld_rr_a(self, dst_register):
+        registers = vars(self.registers)
+
+        def real_ld_rr_a():
+            self.memory.write_byte(registers[dst_register], self.registers.a_register)
+
+        return real_ld_rr_a
+
+    def ld_nn_a(self):
+        low_byte = self.read_next_byte()
+        high_byte = self.read_next_byte()
+        address = ((high_byte << 8) | low_byte) & 0xFFFF
+        self.memory.write_byte(address, self.registers.a_register)
+
+    def ld_a_ff00_plus_c(self):
+        self.registers.a_register = self.memory.read_byte(0xFF00 + self.registers.c_register)
+
+    def ld_ff00_plus_c_a(self):
+        self.memory.write_byte(0xFF00 + self.registers.c_register, self.registers.a_register)
+
+    def ld_a_hl_dec(self):
+        self.registers.a_register = self.memory.read_byte(self.registers.hl_register)
+        self.registers.a_register -= 1
+
+    def ld_hl_a_dec(self):
+        self.memory.write_byte(self.registers.hl_register, self.registers.a_register)
+        self.registers.hl_register -= 1
+
+    def ld_a_hl_inc(self):
+        self.registers.a_register = self.memory.read_byte(self.registers.hl_register)
+        self.registers.a_register -= 1
+
+    def ld_hl_a_inc(self):
+        self.memory.write_byte(self.registers.hl_register, self.registers.a_register)
+        self.registers.hl_register -= 1
 
     def sub(self, value):
         self.registers.z_flag = self.registers.a_register == value
